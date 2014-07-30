@@ -56,10 +56,10 @@ CMD \
     /pipework --wait &&\
     echo Starting DHCP+TFTP server...&&\
     dnsmasq --interface=eth1 \
-    	    --dhcp-range=192.168.242.2,192.168.242.99,255.255.255.0,1h \
-	    --dhcp-boot=pxelinux.0,pxeserver,192.168.242.1 \
-	    --pxe-service=x86PC,"Install Linux",pxelinux \
-	    --enable-tftp --tftp-root=/tftp/ --no-daemon
+            --dhcp-range=192.168.242.2,192.168.242.99,255.255.255.0,1h \
+            --dhcp-boot=pxelinux.0,pxeserver,192.168.242.1 \
+            --pxe-service=x86PC,"Install Linux",pxelinux \
+            --enable-tftp --tftp-root=/tftp/ --no-daemon
 # Let's be honest: I don't know if the --pxe-service option is necessary.
 # The iPXE loader in QEMU boots without it.  But I know how some PXE ROMs
 # can be picky, so I decided to leave it, since it shouldn't hurt.
@@ -75,5 +75,3 @@ CMD \
 #      If you continue to receive this message after installing, make sure that
 #      the bson_ext gem is in your load path.
 ###### but after 'gem install bson_ext' I get
-
-

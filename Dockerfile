@@ -51,7 +51,7 @@ RUN PATH=/opt/jruby-1.7.13/bin:$PATH bundle install
 ###### but after 'gem install bson_ext' I get
 
 
-RUN bundle exec ./hanlon_init
+RUN PATH=/opt/jruby-1.7.13/bin:$PATH bundle exec ./hanlon_init
 WORKDIR /opt/hanlon/script
 RUN PATH=/opt/jruby-1.7.13/bin:$PATH ./create_war.sh
 

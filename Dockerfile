@@ -8,8 +8,16 @@ ADD http://boot.ipxe.org/ipxe.iso /tftp/ipxe.iso
 ADD https://www.kernel.org/pub/linux/utils/boot/syslinux/syslinux-6.02.tar.bz2 /root/syslinux-6.02.tar.bz2
 ADD http://jruby.org.s3.amazonaws.com/downloads/1.7.13/jruby-bin-1.7.13.tar.gz /root/jruby-bin-1.7.13.tar.gz
 
+# FROM phusion/baseimage
+# ENV ARCH amd64
+#ENV DIST wheezy
+#ENV MIRROR http://ftp.nl.debian.org
 RUN apt-get -q update
-RUN apt-get -qy install dnsmasq wget iptables p7zip-full ruby1.9.1 ruby1.9.1-dev bzip2 git-core openjdk-6-jdk postgresql libpq-dev build-essential
+RUN apt-get -qy install dnsmasq wget iptables
+RUN apt-get -qy install p7zip-full ruby1.9.1 ruby1.9.1-dev
+RUN apt-get -qy install bzip2 git-core
+RUN apt-get -qy install openjdk-6-jdk
+RUN apt-get -qy install postgresql libpq-dev build-essential
 RUN gem install bundler --no-ri --no-rdoc
 
 RUN mkdir pxelinux.cfg
@@ -28,13 +36,24 @@ RUN apt-get -qy install mongodb-org
 
 RUN git clone https://github.com/csc/Hanlon.git /opt/hanlon
 WORKDIR /opt/hanlon
-# uncomment pg and bson_ext
-RUN sed  -i 's/^#\(.*\)/\1/g' Gemfile
-RUN bundle install
+#RUN sed  -i 's/^#\(.*\)/\1/g' Gemfile
+RUN PATH=/opt/jruby-1.7.13/bin:$PATH jgem install bundler
+RUN PATH=/opt/jruby-1.7.13/bin:$PATH bundle install
+
+##### bson_ext installation seem to be recommended
+#      ** Notice: The native BSON extension was not loaded. **
+#      For optimal performance, use of the BSON extension is recommended.
+#      To enable the extension make sure ENV['BSON_EXT_DISABLED'] is not set
+#      and run the following command:
+#        gem install bson_ext
+#      If you continue to receive this message after installing, make sure that
+#      the bson_ext gem is in your load path.
+###### but after 'gem install bson_ext' I get
+
 
 RUN bundle exec ./hanlon_init
-
-# Now we need to get the db up and run dnsmasq and the hanlon api server
+WORKDIR /opt/hanlon/script
+RUN PATH=/opt/jruby-1.7.13/bin:$PATH ./create_war.sh
 
 CMD \
     echo Setting up iptables... &&\
@@ -50,3 +69,4 @@ CMD \
 # Let's be honest: I don't know if the --pxe-service option is necessary.
 # The iPXE loader in QEMU boots without it.  But I know how some PXE ROMs
 # can be picky, so I decided to leave it, since it shouldn't hurt.
+
